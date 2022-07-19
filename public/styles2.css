@@ -1,0 +1,10 @@
+body {
+    background: skyblue;
+}
+main {
+    display: flex;
+    flex-wrap: wrap;
+}
+main div {
+    width: 30%;
+}

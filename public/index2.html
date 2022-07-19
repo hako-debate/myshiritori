@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles2.css">
+</head>
+
+<body>
+    <h1>しりとり</h1>
+    <p id="userinfo"></p>
+    <p id="previousWord"></p>
+    <input id="nextWordInput" type="text" />
+    <button id="nextWordSendButton">送信</button>
+    <button id="resetSendButton">リセット</button>
+    <main>
+        <div id="member"></div>
+        <div id="wordlog"></div>
+    </main>
+
+    <script type="module">
+        var name = localStorage.getItem('name');
+        var number = localStorage.getItem('number');
+
+        localStorage.setItem(number, 0);
+
+        // 現時点でのユーザーリストを取得
+        function get_room(number, list) {
+            // roominfo特定
+            const roominfolist = list.split('|');
+            for (let i = 0; i < roominfolist.length; ++i){
+                var room = JSON.parse(roominfolist[i]);
+                if (room.number==number){
+                    return room;
+                }
+            }
+        }
+
+        window.onload = async (event) => {
+            const uspara = document.querySelector("#userinfo");
+            uspara.innerText = `ユーザー名：${name}，ルーム番号：${number}`;
+
+            const response = await fetch("/shiritori");
+            const previousWord = await response.text();
+
+            const para = document.querySelector("#previousWord");
+            para.innerText = `前の単語：${previousWord}`;
+
+            // 値を監視
+            function observe( key ){
+                const onObserve = async function() {
+                    let VALUE = localStorage.getItem(key);
+                    // 1,wordの更新 2,memberの更新
+                    if ( VALUE == 1 ){
+                        // 履歴更新を表示（room内部ユーザ同期）
+                        // 最新のnumberのJSON roominfoを取得
+                        const roominfores = await fetch("/roominfo");
+                        const list = await roominfores.text();
+                        let roominfo = get_room(number,list);
+                        let wordlog = roominfo.wordlog;
+                        let userlog = roominfo.userlog;
+
+                        // 履歴更新
+                        const pastWords = document.getElementById("wordlog");
+                        while(pastWords.lastChild){
+                            pastWords.removeChild(pastWords.lastChild);
+                        }
+                        for (let i=0; i<wordlog.length; i++){
+                            let new_element = document.createElement('p');
+                            new_element.textContent = `${userlog[i]} ${wordlog[i]}`;
+                            pastWords.prepend(new_element);
+                        }
+                        const para = document.querySelector("#previousWord");
+                        para.innerText = `前の単語：${userlog[userlog.length-1]} ${wordlog[wordlog.length-1]}`;
+                    }
+                    else if (VALUE == 2){
+                        const roominfores = await fetch("/roominfo");
+                        const list = await roominfores.text();
+                        let roominfo = get_room(number,list);
+                        let users = roominfo.users;
+                        const pastWords = document.getElementById("member");
+                        while(pastWords.lastChild){
+                            pastWords.removeChild(pastWords.lastChild);
+                        }
+                        for (let i=0; i<users.length; i++){
+                            let new_element = document.createElement('p');
+                            new_element.textContent = `${users[i]} が参加しています`;
+                            pastWords.prepend(new_element);
+                        }
+                    }
+                    localStorage.setItem(key, 0);
+                };
+                setInterval( onObserve, 1 );
+            };
+            observe( number );
+
+            // word/参加ログの更新
+            localStorage.setItem(number, 1);
+            localStorage.setItem(number, 2);
+        };
+
+
+        document.querySelector("#nextWordSendButton").onclick = async (event) => {
+            const nextWord = document.querySelector("#nextWordInput").value;
+            const response = await fetch("/shiritori", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, number, nextWord })
+            });
+            if (response.status / 100 !== 2) {
+                alert(await response.text());
+                return;
+            }
+
+            // 最新ログを表示
+            localStorage.setItem(number, 1);
+        };
+
+        document.querySelector("#resetSendButton").onclick = async (event) => {
+            const response = await fetch("/reset", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ number })
+            });
+            location.href = 'index.html';
+        };
+
+    </script>
+</body>
+
+</html>

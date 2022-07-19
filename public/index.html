@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>ユーザ登録</h1>
+    <p id="previousWord"></p>
+    <p id="name">ユーザー名</p>
+    <input id="nameInput" type="text" />
+    <p id="number">Room Number</p>
+    <input id="numberInput" type="text" />
+    <button id="namenumberSendButton">送信</button>
+
+    <script type="module">
+        window.onload = async (event) => {
+
+        };
+
+
+        document.querySelector("#namenumberSendButton").onclick = async (event) => {
+            const name = document.querySelector("#nameInput").value;
+            const number = document.querySelector("#numberInput").value;
+
+            localStorage.setItem('name', name);
+            localStorage.setItem('number', number);
+
+            const response = await fetch("/shiritori", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, number })
+            });
+            if (response.status == 400) {
+                alert(await response.text());
+                location.href = 'index2.html';
+                return;
+            }
+            else{
+                alert(await response.text());
+                return;
+            }
+            const previousWord = await response.text();
+
+            const para = document.querySelector("#previousWord");
+            para.innerText = `前の単語：${previousWord}`;
+
+            const pastWords = document.getElementById("textbox");
+            var new_element = document.createElement('p');
+            new_element.textContent = previousWord;
+            pastWords.prepend(new_element);
+        };
+    </script>
+</body>
+
+</html>
