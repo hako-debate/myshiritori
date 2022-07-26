@@ -3,17 +3,52 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: skyblue;
+            text-align: center;
+        }
+        h1 {
+            color:blue;
+            font-family: sans-serif;
+        }
+        input{
+            width: 80%;
+            padding: 10px 15px;
+            font-size: 20px;
+            border-radius: 100px;
+            border: 5px solid #ddd;
+            box-sizing: border-box;
+        }
+        .button {
+            background-color: #190c8d;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 600;
+            position: relative;
+            border-radius: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            height: 50px;
+            width: 130px;
+            margin:50px;
+            margin-left: auto;
+            margin-right: auto;
+            padding:auto;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>ユーザ登録</h1>
+    <h1>プレイヤー登録</h1>
     <p id="previousWord"></p>
-    <p id="name">ユーザー名</p>
-    <input id="nameInput" type="text" />
-    <p id="number">Room Number</p>
-    <input id="numberInput" type="text" />
-    <button id="namenumberSendButton">送信</button>
+    <p id="name">プレーヤー名を入力</p>
+    <input id="nameInput" type="text" placeholder="Player Name">
+    <p id="number">ルームIDを入力</p>
+    <input id="numberInput" type="text" placeholder="Room ID"/>
+    <a id="namenumberSendButton" href="" class="button">送信</a>
 
     <script type="module">
         window.onload = async (event) => {

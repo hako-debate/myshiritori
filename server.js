@@ -129,7 +129,7 @@ serve(async (req) => {
                 const new_room = new Room(number);
                 new_room.users.push(name);
                 new_room.wordlog.push(previousWord);
-                new_room.userlog.push("Start");
+                new_room.userlog.push("Start　");
                 roomsArray.push(new_room);
             }
 
