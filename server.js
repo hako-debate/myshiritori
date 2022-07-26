@@ -85,9 +85,6 @@ serve(async (req) => {
                     }
                 }
             }
-            if (nextWord.charAt(nextWord.length - 1) == "ん") {
-                return new Response("「ん」で終わらないでください．", { status: 400 });
-            }
             if (!nextWord.match(/^[ぁ-んー　]*$/)) {
                 return new Response("ひらがなを入力してください．", { status: 400 });
             }
